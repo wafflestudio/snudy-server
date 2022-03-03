@@ -7,7 +7,6 @@ import os
 
 class PingAPI(APIView):
     permission_classes = (permissions.AllowAny,)
+
     def get(self, *args, **kwargs):
-        return Response({
-            'ping': 'pong'
-        })
+        return Response({"ping": "pong"})
