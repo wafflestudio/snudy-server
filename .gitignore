@@ -134,3 +134,6 @@ dmypy.json
 
 # secret informations
 secrets.json
+
+# static files
+static/
