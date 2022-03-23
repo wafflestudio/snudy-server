@@ -1,19 +1,9 @@
-import os
-import hmac
-import time
-import base64
-import hashlib
-import datetime
-import requests
-from random import randint
-
 from django.contrib.auth.models import (
     BaseUserManager,
     AbstractBaseUser,
     PermissionsMixin,
 )
 from django.db import models
-from django.utils import timezone
 
 
 class CustomUserManager(BaseUserManager):
