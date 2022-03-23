@@ -190,4 +190,8 @@ JWT_AUTH = {
     "JWT_REFRESH_EXPIRATION_DELTA": datetime.timedelta(days=3),  # JWT 토큰 갱신 유효기간
 }
 
-AUTH_USER_MODEL = 'user.User'
+AUTH_USER_MODEL = "user.User"
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+]
