@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     "rest_framework_jwt",
     "rest_framework.authtoken",
     "ping.apps.PingConfig",
+    "user.apps.UserConfig",
 ]
 
 MIDDLEWARE = [
@@ -188,3 +189,9 @@ JWT_AUTH = {
     "JWT_EXPIRATION_DELTA": datetime.timedelta(hours=24),  # 유효기간 설정
     "JWT_REFRESH_EXPIRATION_DELTA": datetime.timedelta(days=3),  # JWT 토큰 갱신 유효기간
 }
+
+AUTH_USER_MODEL = "user.User"
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+]
