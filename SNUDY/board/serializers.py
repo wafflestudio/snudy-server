@@ -7,7 +7,7 @@ from board.models import Post, Board
 
 
 class PostCreateSerializer(serializers.Serializer):
-    title = serializers.CharField()
+    title = serializers.CharField(max_length=255)
     content = serializers.CharField()
     is_anonymous = serializers.BooleanField(required=False)
 
