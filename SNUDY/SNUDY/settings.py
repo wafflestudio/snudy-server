@@ -59,7 +59,7 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "ping.apps.PingConfig",
     "user.apps.UserConfig",
-    "board.apps.UserConfig",
+    "board.apps.BoardConfig",
 ]
 
 MIDDLEWARE = [
