@@ -52,3 +52,7 @@ class PostViewSet(viewsets.GenericViewSet):
 
         post.delete()
         return Response(status=status.HTTP_200_OK)
+
+
+class CommentViewSet(viewsets.GenericViewSet):
+    pass
