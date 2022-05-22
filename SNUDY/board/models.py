@@ -13,12 +13,8 @@ class Board(models.Model):
 
 
 class Post(models.Model):
-    writer = models.ForeignKey(
-        User, related_name="posts", null=True, on_delete=models.CASCADE
-    )
-    board = models.ForeignKey(
-        Board, related_name="posts", null=True, on_delete=models.CASCADE
-    )
+    writer = models.ForeignKey(User, related_name="posts", on_delete=models.CASCADE)
+    board = models.ForeignKey(Board, related_name="posts", on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     content = models.TextField()
     is_anonymous = models.BooleanField(blank=True, default=False)
@@ -28,12 +24,10 @@ class Post(models.Model):
 
 class Comment(models.Model):
     commenter = models.ForeignKey(
-        User, related_name="comments", null=True, on_delete=models.CASCADE
+        User, related_name="comments", on_delete=models.CASCADE
     )
     post = models.ForeignKey(Post, related_name="comments", on_delete=models.CASCADE)
-    parent = models.ForeignKey(
-        "self", related_name="replies", null=True, on_delete=models.CASCADE
-    )
-    content = models.CharField(max_length=255, editable=False)
+    parent = models.ForeignKey("self", related_name="replies", on_delete=models.CASCADE)
+    content = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

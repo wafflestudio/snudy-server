@@ -56,3 +56,7 @@ class PostSerializer(serializers.ModelSerializer):
             return "익명"
         else:
             return post.writer.name
+
+
+class CommentCreateSerializer(serializers.Serializer):
+    pass
