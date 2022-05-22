@@ -3,8 +3,12 @@ from rest_framework.response import Response
 
 from django.shortcuts import get_object_or_404
 
-from board.models import Post
-from board.serializers import PostCreateSerializer, PostSerializer
+from board.models import Post, Comment
+from board.serializers import (
+    PostCreateSerializer,
+    PostSerializer,
+    CommentCreateSerializer,
+)
 
 
 class PostViewSet(viewsets.GenericViewSet):
@@ -15,7 +19,7 @@ class PostViewSet(viewsets.GenericViewSet):
     def create(self, request, b_pk=None):
         user = request.user
         serializer = PostCreateSerializer(
-            data=request.data, context={"user": user, "board_id": b_pk}
+            data=request.data, context={"writer": user, "board_id": b_pk}
         )
         serializer.is_valid(raise_exception=True)
         post = serializer.save()
@@ -36,7 +40,7 @@ class PostViewSet(viewsets.GenericViewSet):
             return Response(status=status.HTTP_403_FORBIDDEN)
 
         serializer = PostCreateSerializer(
-            post, data=request.data, context={"user": user, "board_id": b_pk}
+            post, data=request.data, context={"writer": user, "board_id": b_pk}
         )
         serializer.is_valid(raise_exception=True)
         post = serializer.save()
@@ -55,4 +59,23 @@ class PostViewSet(viewsets.GenericViewSet):
 
 
 class CommentViewSet(viewsets.GenericViewSet):
-    pass
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = Comment.objects.all()
+
+    def create(self, request, p_pk=None, **kwargs):
+        user = request.user
+        serializer = CommentCreateSerializer(
+            data=request.data, context={"writer": user, "post_id": p_pk}
+        )
+        serializer.is_valid(raise_exception=True)
+        comment = serializer.save()
+        return Response(status=status.HTTP_201_CREATED)
+
+    def destroy(self, request, pk=None, **kwargs):
+        user = request.user
+        comment = get_object_or_404(self.queryset, pk=pk)
+        if user != comment.writer:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        comment.delete()
+        return Response(status=status.HTTP_200_OK)

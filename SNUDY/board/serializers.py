@@ -3,7 +3,7 @@ from rest_framework import serializers
 
 from django.shortcuts import get_object_or_404
 
-from board.models import Post, Board
+from board.models import Post, Board, Comment
 
 
 class PostCreateSerializer(serializers.Serializer):
@@ -12,8 +12,8 @@ class PostCreateSerializer(serializers.Serializer):
     is_anonymous = serializers.BooleanField(required=False)
 
     def validate(self, data):
-        user = self.context.get("user")
-        if user is None:
+        writer = self.context.get("writer")
+        if writer is None:
             raise serializers.ValidationError()
 
         board_id = self.context.get("board_id")
@@ -21,11 +21,11 @@ class PostCreateSerializer(serializers.Serializer):
         return data
 
     def create(self, validated_data):
-        user = self.context.get("user")
+        writer = self.context.get("writer")
         board_id = self.context.get("board_id")
         board = get_object_or_404(Board, pk=board_id)
 
-        post = Post.objects.create(writer=user, board=board, **validated_data)
+        post = Post.objects.create(writer=writer, board=board, **validated_data)
         return post
 
     def update(self, post, validated_data):
@@ -59,4 +59,26 @@ class PostSerializer(serializers.ModelSerializer):
 
 
 class CommentCreateSerializer(serializers.Serializer):
-    pass
+    parent_id = serializers.IntegerField(required=False)
+    content = serializers.CharField(max_length=255)
+
+    def validate(self, data):
+        writer = self.context.get("writer")
+        if writer is None:
+            raise serializers.ValidationError()
+
+        post_id = self.context.get("post_id")
+        post = get_object_or_404(Post, pk=post_id)
+
+        parent_id = data.get("parent_id")
+        if parent_id is not None:
+            parent = get_object_or_404(Comment, pk=parent_id)
+        return data
+
+    def create(self, validated_data):
+        writer = self.context.get("writer")
+        post_id = self.context.get("post_id")
+        post = get_object_or_404(Post, pk=post_id)
+
+        comment = Comment.objects.create(writer=writer, post=post, **validated_data)
+        return comment

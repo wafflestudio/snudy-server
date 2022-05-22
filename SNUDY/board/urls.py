@@ -11,7 +11,7 @@ router.register(
     "board/(?P<b_pk>[0-9]+)/post", PostViewSet, basename="post"
 )  # /api/v1/board/<b_pk>/post/
 router.register(
-    "board/(?P<b_pk>[0-9]+)/post/(?P<p_pk>[0-9]+)/comment/",
+    "board/(?P<b_pk>[0-9]+)/post/(?P<p_pk>[0-9]+)/comment",
     CommentViewSet,
     basename="comment",
 )  # /api/v1/board/<b_pk>/post/<p_pk>/comment/
