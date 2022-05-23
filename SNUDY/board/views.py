@@ -23,13 +23,14 @@ class PostViewSet(viewsets.GenericViewSet):
     def list(self, request, b_pk=None):
         board = get_object_or_404(Board, pk=b_pk)
         all_posts = self.queryset.filter(board=board)
-        all_posts = all_posts.order_by('-created_at')
+        all_posts = all_posts.order_by("-created_at")
 
         paginator = Paginator(all_posts, 10)
-        page = request.GET.get('page')
+        page = request.GET.get("page")
         posts = paginator.get_page(page)
-        return Response(data=PostSimpleSerializer(posts, many=True).data, status=status.HTTP_200_OK)
-
+        return Response(
+            data=PostSimpleSerializer(posts, many=True).data, status=status.HTTP_200_OK
+        )
 
     def create(self, request, b_pk=None):
         user = request.user
