@@ -2,12 +2,14 @@ from os import stat
 from rest_framework import status, viewsets, permissions
 from rest_framework.response import Response
 
+from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404
 
-from board.models import Post, Comment
+from board.models import Board, Post, Comment
 from board.serializers import (
     PostCreateSerializer,
     PostSerializer,
+    PostSimpleSerializer,
     CommentCreateSerializer,
     CommentSerializer,
 )
@@ -17,6 +19,17 @@ class PostViewSet(viewsets.GenericViewSet):
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = PostSerializer
     queryset = Post.objects.all()
+
+    def list(self, request, b_pk=None):
+        board = get_object_or_404(Board, pk=b_pk)
+        all_posts = self.queryset.filter(board=board)
+        all_posts = all_posts.order_by('-created_at')
+
+        paginator = Paginator(all_posts, 10)
+        page = request.GET.get('page')
+        posts = paginator.get_page(page)
+        return Response(data=PostSimpleSerializer(posts, many=True).data, status=status.HTTP_200_OK)
+
 
     def create(self, request, b_pk=None):
         user = request.user
@@ -62,7 +75,8 @@ class CommentViewSet(viewsets.GenericViewSet):
     queryset = Comment.objects.all()
 
     def list(self, request, p_pk=None, **kwargs):
-        comments = self.queryset.filter(post_id=p_pk)
+        post = get_object_or_404(Post, pk=p_pk)
+        comments = self.queryset.filter(post=post)
         comments = comments.order_by("created_at")
         return Response(
             data=self.get_serializer(comments, many=True).data,

@@ -58,6 +58,27 @@ class PostSerializer(serializers.ModelSerializer):
             return post.writer.name
 
 
+class PostSimpleSerializer(serializers.ModelSerializer):
+    writer = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Post
+        fields = (
+            "id",
+            "title",
+            "writer",
+            "is_anonymous",
+            "created_at",
+            "updated_at",
+        )
+
+    def get_writer(self, post):
+        if post.is_anonymous:
+            return "익명"
+        else:
+            return post.writer.name
+
+
 class CommentCreateSerializer(serializers.Serializer):
     parent_id = serializers.IntegerField(required=False)
     content = serializers.CharField(max_length=255)
