@@ -29,5 +29,6 @@ class Comment(models.Model):
         "self", on_delete=models.CASCADE, related_name="replies", null=True
     )
     content = models.CharField(max_length=255)
+    is_anonymous = models.BooleanField(blank=True, default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

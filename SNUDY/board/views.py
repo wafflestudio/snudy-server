@@ -1,3 +1,4 @@
+from os import stat
 from rest_framework import status, viewsets, permissions
 from rest_framework.response import Response
 
@@ -8,6 +9,7 @@ from board.serializers import (
     PostCreateSerializer,
     PostSerializer,
     CommentCreateSerializer,
+    CommentSerializer,
 )
 
 
@@ -29,9 +31,7 @@ class PostViewSet(viewsets.GenericViewSet):
 
     def retrieve(self, request, pk=None, **kwargs):
         post = get_object_or_404(self.queryset, pk=pk)
-        return Response(
-            data=self.get_serializer(post).data, status=status.HTTP_201_CREATED
-        )
+        return Response(data=self.get_serializer(post).data, status=status.HTTP_200_OK)
 
     def update(self, request, b_pk=None, pk=None):
         user = request.user
@@ -44,9 +44,7 @@ class PostViewSet(viewsets.GenericViewSet):
         )
         serializer.is_valid(raise_exception=True)
         post = serializer.save()
-        return Response(
-            data=self.get_serializer(post).data, status=status.HTTP_201_CREATED
-        )
+        return Response(data=self.get_serializer(post).data, status=status.HTTP_200_OK)
 
     def destroy(self, request, pk=None, **kwargs):
         user = request.user
@@ -60,7 +58,16 @@ class PostViewSet(viewsets.GenericViewSet):
 
 class CommentViewSet(viewsets.GenericViewSet):
     permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = CommentSerializer
     queryset = Comment.objects.all()
+
+    def list(self, request, p_pk=None, **kwargs):
+        comments = self.queryset.filter(post_id=p_pk)
+        comments = comments.order_by("created_at")
+        return Response(
+            data=self.get_serializer(comments, many=True).data,
+            status=status.HTTP_200_OK,
+        )
 
     def create(self, request, p_pk=None, **kwargs):
         user = request.user
@@ -69,7 +76,30 @@ class CommentViewSet(viewsets.GenericViewSet):
         )
         serializer.is_valid(raise_exception=True)
         comment = serializer.save()
-        return Response(status=status.HTTP_201_CREATED)
+        return Response(
+            data=self.get_serializer(comment).data, status=status.HTTP_201_CREATED
+        )
+
+    def retrieve(self, request, pk=None, **kwargs):
+        comment = get_object_or_404(self.queryset, pk=pk)
+        return Response(
+            data=self.get_serializer(comment).data, status=status.HTTP_200_OK
+        )
+
+    def update(self, request, p_pk=None, pk=None, **kwargs):
+        user = request.user
+        comment = get_object_or_404(self.queryset, pk=pk)
+        if user != comment.writer:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        serializer = CommentCreateSerializer(
+            comment, data=request.data, context={"writer": user, "post_id": p_pk}
+        )
+        serializer.is_valid(raise_exception=True)
+        comment = serializer.save()
+        return Response(
+            data=self.get_serializer(comment).data, status=status.HTTP_200_OK
+        )
 
     def destroy(self, request, pk=None, **kwargs):
         user = request.user
