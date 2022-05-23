@@ -24,7 +24,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=128, unique=True)
     name = models.CharField(max_length=32)
     student_id = models.CharField(max_length=10, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
     is_admin = models.BooleanField(null=True, default=False)
     is_active = models.BooleanField(null=True, default=False)
 
