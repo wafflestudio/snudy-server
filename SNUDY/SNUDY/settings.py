@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "ping.apps.PingConfig",
     "user.apps.UserConfig",
+    "semester.apps.SemesterConfig",
 ]
 
 MIDDLEWARE = [

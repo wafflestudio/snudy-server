@@ -26,6 +26,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     student_id = models.CharField(max_length=10, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     is_admin = models.BooleanField(null=True, default=False)
-    is_active = models.BooleanField(null=True, default=False)
+    is_active = models.BooleanField(null=True, default=True)
 
     objects = CustomUserManager()
